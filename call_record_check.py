@@ -46,6 +46,14 @@ class RecordCheck:
     def close(self):
         self.driver.quit()
 
+    # Verification function
+    def verify_xpath_element(self, card_view_xpath, relative_xpath, expected_value, label):
+        xpath = f"{card_view_xpath}{relative_xpath}"
+        print(f"Locating {label}: {xpath}")
+        element_text = self.driver.find_element(AppiumBy.XPATH, xpath).text
+        print(f"{label}: {element_text}")
+        assert element_text == expected_value, f"{label} did not match"
+
 
     def validate_a_record(self,schedule_information):
         try:
@@ -55,8 +63,8 @@ class RecordCheck:
                 '//android.widget.FrameLayout[@resource-id="com.mpower.android.app.lpin.crm:id/cvRoutine"]/android.widget.LinearLayout'
             )
 
-            print(
-                f"\nfarmer name: {schedule_information.farmer_name}\nfarmer's mobile: {schedule_information.farmer_mobile}\nfarmer address: {schedule_information.farmer_address}\ndays_to_go: {schedule_information.days_to_go}\nscheduled day: {schedule_information.scheduled_day}\nscheduled hour: {schedule_information.scheduled_hour}\nscheduled minute: {schedule_information.scheduled_minute}\nscheduled AM/PM: {schedule_information.scheduled_ampm}")
+            # print(
+            #     f"\nfarmer name: {schedule_information.farmer_name}\nfarmer's mobile: {schedule_information.farmer_mobile}\nfarmer address: {schedule_information.farmer_address}\ndays_to_go: {schedule_information.days_to_go}\nscheduled day: {schedule_information.scheduled_day}\nscheduled hour: {schedule_information.scheduled_hour}\nscheduled minute: {schedule_information.scheduled_minute}\nscheduled AM/PM: {schedule_information.scheduled_ampm}")
 
             bangla_translate = EnglishToBangla()
 
@@ -76,51 +84,41 @@ class RecordCheck:
             active_date = self.driver.find_element("id",'com.mpower.android.app.lpin.crm:id/actvDateRoutine').get_attribute("text")
 
             if schedule_information.scheduled_day == active_date:
+                print(f"\n{schedule_information.scheduled_day} = {active_date}")
 
-                print(f"\n{schedule_information.scheduled_day} ={active_date}")
-
-                # Locate the schedule list class
                 try:
-
+                    # Define common paths
                     name_xpath = f"//android.widget.TextView[@text='{schedule_information.farmer_name}']"
-
                     print(name_xpath)
 
                     card_view_xpath = f"{name_xpath}/ancestor::androidx.cardview.widget.CardView"
-
                     print(card_view_xpath)
 
                     card_view = self.driver.find_element(AppiumBy.XPATH, card_view_xpath)
+                    print("Located Card View")
 
-                    print(f"{card_view.text}")
-
-                    # time_xpath = f"{card_view_xpath}//android.widget.TextView[contains(@text, '{bangla_hour}টা ')]"
+                    # Verify scheduled time
                     time_xpath = f"{card_view_xpath}//android.widget.TextView[contains(@resource-id, 'com.mpower.android.app.lpin.crm:id/actvTimeRoutineItem')]"
-
-                    print(time_xpath)
-
                     timing = self.driver.find_element(AppiumBy.XPATH, time_xpath).text
+                    time_string = f"{bangla_ampm} {bangla_hour}টা {bangla_minute}"
 
-                except Exception as e:
-                    print(f"An error occurred: {str(e)}")
+                    print(f"Expected Time: {time_string}, Actual Time: {timing}")
+                    assert timing == time_string, "Scheduled time did not match"
 
-                time_string = f"{bangla_ampm} {bangla_hour}টা {bangla_minute}"
 
-                print(time_string)
-                print(timing)
-
-                assert timing ==time_string, "scheduled time didnot match"
-
-                try:
-                    farmer_name_xpath = f"{card_view_xpath}//android.widget.TextView[contains(@resource-id, 'com.mpower.android.app.lpin.crm:id/actvTimeRoutineItem')]"
-
-                    print(time_xpath)
+                    # Verify farmer details
+                    self.verify_xpath_element(card_view_xpath,"//android.widget.LinearLayout[not(@resource-id)]//android.widget.TextView[1]",
+                                         schedule_information.farmer_name, "Farmer's Name")
+                    self.verify_xpath_element(card_view_xpath,"//android.widget.LinearLayout[not(@resource-id)]//android.widget.TextView[2]",
+                                         schedule_information.farmer_mobile, "Farmer's Mobile")
+                    self.verify_xpath_element(card_view_xpath,"//android.widget.LinearLayout[not(@resource-id)]//android.widget.TextView[3]",
+                                         schedule_information.farmer_address, "Farmer's Address")
 
                 except Exception as e:
                     print(f"An error occurred: {str(e)}")
 
             else:
-                    print("Date didn't match")
+                print("Date didn't match")
 
             print("again checking")
 

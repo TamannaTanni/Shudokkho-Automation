@@ -73,19 +73,19 @@ class CallRecord(unittest.TestCase):
             )
 
             #fill farmer details
-            record_info.farmer_name = "Holaa"
+            record_info.farmer_name = "Hum"
             self.input_text(By.ID,
                             'com.mpower.android.app.lpin.crm:id/acactvFarmerNameNewVisit',
                             record_info.farmer_name
                             )
 
-            record_info.farmer_mobile = "01100000005"
+            record_info.farmer_mobile = "01100000010"
             self.input_text(By.ID,
                             'com.mpower.android.app.lpin.crm:id/acactvMobileNewVisit',
                             record_info.farmer_mobile
                             )
 
-            record_info.farmer_address = "Strr"
+            record_info.farmer_address = "xyz"
             self.input_text(By.ID,
                             'com.mpower.android.app.lpin.crm:id/acactvAddressNewVisit',
                             record_info.farmer_address
@@ -93,7 +93,7 @@ class CallRecord(unittest.TestCase):
 
 
             #change to different date
-            record_info.days_to_go = 0
+            record_info.days_to_go = 1
             for _ in range(record_info.days_to_go):
                 self.click_element(By.ID, "com.mpower.android.app.lpin.crm:id/acivNextNewVisit")
 
@@ -102,11 +102,11 @@ class CallRecord(unittest.TestCase):
             record_info.scheduled_hour = self.driver.find_element("xpath", "//android.widget.Spinner[@resource-id='com.mpower.android.app.lpin.crm:id/acsTimeNewVisit']//android.widget.TextView[@resource-id='android:id/text1']").text
 
 
-            record_info.scheduled_hour = '1'
+            # record_info.scheduled_hour = '11'
 
             self.driver.find_element("xpath", '//android.widget.EditText[@resource-id="com.mpower.android.app.lpin.crm:id/etMinutesNextVisit"]').clear()
 
-            record_info.scheduled_minute = '10'
+            record_info.scheduled_minute = '50'
 
             self.input_text(By.XPATH,
                             '//android.widget.EditText[@resource-id="com.mpower.android.app.lpin.crm:id/etMinutesNextVisit"]',
@@ -116,21 +116,21 @@ class CallRecord(unittest.TestCase):
             record_info.scheduled_ampm = self.driver.find_element("xpath",
                                                           "//android.widget.Spinner[@resource-id='com.mpower.android.app.lpin.crm:id/acsMidDayNewVisit']//android.widget.TextView[@resource-id='android:id/text1']").text
 
-            record_info.scheduled_ampm = 'PM'
+            # record_info.scheduled_ampm = 'AM'
 
-            # self.click_element(By.XPATH,'//android.widget.Button[@resource-id="com.mpower.android.app.lpin.crm:id/mbSubmitNewVisit"]')
-            #
-            # # Handle advertisement dialog
-            # try:
-            #     self.click_element(By.ID, "com.mpower.android.app.lpin.crm:id/btnDialogClose")
-            # except Exception:
-            #     print("Advertisement dialog not found. Skipping...")
-            #
-            # # Pause for 2-3 seconds
-            # time.sleep(3)
+            self.click_element(By.XPATH,'//android.widget.Button[@resource-id="com.mpower.android.app.lpin.crm:id/mbSubmitNewVisit"]')
+
+            # Handle advertisement dialog
+            try:
+                self.click_element(By.ID, "com.mpower.android.app.lpin.crm:id/btnDialogClose")
+            except Exception:
+                print("Advertisement dialog not found. Skipping...")
+
+            # Pause for 2-3 seconds
+            time.sleep(3)
 
 
-            self.click_element(By.XPATH,'//android.widget.ImageButton[@content-desc="Navigate up"]')
+            # self.click_element(By.XPATH,'//android.widget.ImageButton[@content-desc="Navigate up"]')
 
             print("New call has been recorded")
 
